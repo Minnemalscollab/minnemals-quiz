@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Have Your Shoes Made Your Feet Weaker? | Minnemals</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #161616;
+    --surface-2: #1e1e1e;
+    --border: rgba(212,244,226,0.08);
+    --border-hover: rgba(212,244,226,0.2);
+    --text: #f0ede6;
+    --text-muted: rgba(240,237,230,0.5);
+    --accent: #D4F4E2;
+    --accent-dim: rgba(212,244,226,0.1);
+    --accent-hover: rgba(212,244,226,0.18);
+    --danger: #c0392b;
+    --radius: 4px;
+    --radius-lg: 8px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .quiz-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 6rem;
+  }
+
+  /* Header */
+  .quiz-header {
+    margin-bottom: 3rem;
+  }
+
+  .quiz-header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .quiz-header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 8vw, 4.5rem);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+
+  .quiz-header h1 span {
+    color: var(--accent);
+  }
+
+  .quiz-header p {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 480px;
+    line-height: 1.7;
+  }
+
+  /* Progress */
+  .progress-bar-wrap {
+    margin-bottom: 2.5rem;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .progress-track {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* Question card */
+  .question-card {
+    display: none;
+    animation: fadeUp 0.35s ease forwards;
+  }
+
+  .question-card.active {
+    display: block;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .question-num {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .question-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .question-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .option:hover {
+    border-color: var(--border-hover);
+    background: var(--surface-2);
+  }
+
+  .option.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .option-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-hover);
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .option.selected .option-indicator {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .option.selected .option-indicator::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--bg);
+  }
+
+  .option-text {
+    flex: 1;
+  }
+
+  /* Next button */
+  .btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.875rem 1.75rem;
+    background: var(--accent);
+    color: #0f0f0f;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .btn-next.enabled {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .btn-next.enabled:hover {
+    background: #f0dfa8;
+    transform: translateX(2px);
+  }
+
+  .btn-arrow {
+    font-size: 16px;
+    transition: transform 0.18s ease;
+  }
+
+  .btn-next.enabled:hover .btn-arrow {
+    transform: translateX(3px);
+  }
+
+  /* Email gate */
+  .email-gate {
+    display: none;
+  }
+
+  .email-gate.active {
+    display: block;
+    animation: fadeUp 0.35s ease forwards;
+  }
+
+  .email-gate-header {
+    margin-bottom: 2rem;
+  }
+
+  .email-gate-header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .email-gate-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.75rem;
+  }
+
+  .email-gate-header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .email-form input {
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.18s ease;
+    width: 100%;
+  }
+
+  .email-form input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .email-form input:focus {
+    border-color: var(--accent);
+  }
+
+  .btn-submit {
+    padding: 1rem 1.75rem;
+    background: var(--accent);
+    color: #0a0a0a;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .btn-submit:hover {
+    background: #f0dfa8;
+  }
+
+  .privacy-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 4px;
+    letter-spacing: 0.03em;
+  }
+
+  /* Results */
+  .results {
+    display: none;
+  }
+
+  .results.active {
+    display: block;
+    animation: fadeUp 0.35s ease forwards;
+  }
+
+  .result-badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(232,213,160,0.3);
+    padding: 5px 14px;
+    border-radius: 2px;
+    margin-bottom: 1.25rem;
+  }
+
+  .result-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 7vw, 3.8rem);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    margin-bottom: 1.25rem;
+  }
+
+  .result-body {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    max-width: 520px;
+    margin-bottom: 2rem;
+  }
+
+  .result-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2rem 0;
+  }
+
+  .result-next-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 1rem 1.75rem;
+    background: var(--accent);
+    color: #0a0a0a;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.18s ease;
+  }
+
+  .btn-primary:hover {
+    background: #f0dfa8;
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 1rem 1.75rem;
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.18s ease;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Score indicator */
+  .score-bar-wrap {
+    margin: 1.5rem 0;
+  }
+
+  .score-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .score-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .score-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease 0.3s;
+  }
+
+  .score-fill.low { background: #c0392b; }
+  .score-fill.mid { background: #e8a020; }
+  .score-fill.high { background: #4caf82; }
+
+  /* Decorative line */
+  .deco-line {
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 520px) {
+    .result-actions {
+      flex-direction: row;
+    }
+
+    .btn-primary, .btn-secondary {
+      flex: 1;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="quiz-wrap">
+
+  <!-- Header (shown on first question only) -->
+  <div class="quiz-header" id="quiz-header">
+    <span class="eyebrow">Minnemals Foot Health Quiz</span>
+    <h1>Are your shoes making your feet <span>weaker?</span></h1>
+    <p>6 questions. Find out what your shoes are actually doing to your movement, and what to do about it.</p>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar-wrap" id="progress-wrap" style="display:none;">
+    <div class="progress-meta">
+      <span id="progress-label">Question 1 of 6</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="question-card active" id="q1">
+    <div class="question-num">01 / 06</div>
+    <div class="question-text">What do you mostly wear day to day?</div>
+    <div class="question-sub">Pick the closest match to your everyday shoe.</div>
+    <div class="options">
+      <button class="option" data-q="1" data-val="cushioned" data-score="3">
+        <div class="option-indicator"></div>
+        <div class="option-text">Running shoes (ex. HOKA, Nike Pegasus)</div>
+      </button>
+      <button class="option" data-q="1" data-val="casual" data-score="2">
+        <div class="option-indicator"></div>
+        <div class="option-text">Casual sneakers (ex. Adidas Sambas, On Cloud)</div>
+      </button>
+      <button class="option" data-q="1" data-val="dress" data-score="2">
+        <div class="option-indicator"></div>
+        <div class="option-text">Work shoes or dress shoes</div>
+      </button>
+      <button class="option" data-q="1" data-val="minimal" data-score="0">
+        <div class="option-indicator"></div>
+        <div class="option-text">I already wear minimalist or barefoot shoes</div>
+      </button>
+    </div>
+    <button class="btn-next" id="next-1" onclick="nextQuestion(1)">Continue <span class="btn-arrow">→</span></button>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question-card" id="q2">
+    <div class="question-num">02 / 06</div>
+    <div class="question-text">Do you experience any of these regularly?</div>
+    <div class="question-sub">Pick the one that feels most familiar.</div>
+    <div class="options">
+      <button class="option" data-q="2" data-val="heel" data-score="3">
+        <div class="option-indicator"></div>
+        <div class="option-text">Heel or arch pain</div>
+      </button>
+      <button class="option" data-q="2" data-val="knee" data-score="2">
+        <div class="option-indicator"></div>
+        <div class="option-text">Knee or hip tightness/pain after walking or running</div>
+      </button>
+      <button class="option" data-q="2" data-val="fatigue" data-score="2">
+        <div class="option-indicator"></div>
+        <div class="option-text">Foot fatigue by end of the day</div>
+      </button>
+      <button class="option" data-q="2" data-val="none" data-score="0">
+        <div class="option-indicator"></div>
+        <div class="option-text">None of the above</div>
+      </button>
+    </div>
+    <button class="btn-next" id="next-2" onclick="nextQuestion(2)">Continue <span class="btn-arrow">→</span></button>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question-card" id="q3">
+    <div class="question-num">03 / 06</div>
+    <div class="question-text">How do you move?</div>
+    <div class="question-sub">What does your week typically look like?</div>
+    <div class="options">
+      <button class="option" data-q="3" data-val="lifting" data-score="1">
+        <div class="option-indicator"></div>
+        <div class="option-text">Strength training or gym work</div>
+      </button>
+      <button class="option" data-q="3" data-val="running" data-score="1">
+        <div class="option-indicator"></div>
+        <div class="option-text">Running</div>
+      </button>
+      <button class="option" data-q="3" data-val="both" data-score="1">
+        <div class="option-indicator"></div>
+        <div class="option-text">Both lifting and running</div>
+      </button>
+      <button class="option" data-q="3" data-val="walking" data-score="1">
+        <div class="option-indicator"></div>
+        <div class="option-text">Mostly walking and daily errands</div>
+      </button>
+    </div>
+    <button class="btn-next" id="next-3" onclick="nextQuestion(3)">Continue <span class="btn-arrow">→</span></button>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question-card" id="q4">
+    <div class="question-num">04 / 06</div>
+    <div class="question-text">Have you ever been told you have flat feet, overpronation, or need arch support?</div>
+    <div class="options">
+      <button class="option" data-q="4" data-val="orthotics" data-score="3">
+        <div class="option-indicator"></div>
+        <div class="option-text">Yes — and I use orthotics or supportive shoes</div>
+      </button>
+      <button class="option" data-q="4" data-val="told-yes" data-score="2">
+        <div class="option-indicator"></div>
+        <div class="option-text">Yes, but I haven't done anything about it</div>
+      </button>
+      <button class="option" data-q="4" data-val="no" data-score="0">
+        <div class="option-indicator"></div>
+        <div class="option-text">No</div>
+      </button>
+      <button class="option" data-q="4" data-val="unsure" data-score="1">
+        <div class="option-indicator"></div>
+        <div class="option-text">Not sure</div>
+      </button>
+    </div>
+    <button class="btn-next" id="next-4" onclick="nextQuestion(4)">Continue <span class="btn-arrow">→</span></button>
+  </div>
+
+  <!-- Q5 — interactive balance test -->
+  <div class="question-card" id="q5">
+    <div class="question-num">05 / 06</div>
+    <div class="question-text">Try this right now</div>
+    <div class="question-sub">Stand on one foot for 10 seconds without wobbling. Barefoot if possible. How did it go?</div>
+    <div class="options">
+      <button class="option" data-q="5" data-val="easy" data-score="0">
+        <div class="option-indicator"></div>
+        <div class="option-text">Easy — no problem at all</div>
+      </button>
+      <button class="option" data-q="5" data-val="ok" data-score="1">
+        <div class="option-indicator"></div>
+        <div class="option-text">Manageable, but I had to work for it</div>
+      </button>
+      <button class="option" data-q="5" data-val="hard" data-score="3">
+        <div class="option-indicator"></div>
+        <div class="option-text">I wobbled and kept falling either inwards or outwards</div>
+      </button>
+      <button class="option" data-q="5" data-val="skipped" data-score="2">
+        <div class="option-indicator"></div>
+        <div class="option-text">I didn't try it</div>
+      </button>
+    </div>
+    <button class="btn-next" id="next-5" onclick="nextQuestion(5)">Continue <span class="btn-arrow">→</span></button>
+  </div>
+
+  <!-- Q6 -->
+  <div class="question-card" id="q6">
+    <div class="question-num">06 / 06</div>
+    <div class="question-text">What matters most to you when it comes to physical health?</div>
+    <div class="options">
+      <button class="option" data-q="6" data-val="pain" data-score="0">
+        <div class="option-indicator"></div>
+        <div class="option-text">Reduce or eliminate pain I'm dealing with now</div>
+      </button>
+      <button class="option" data-q="6" data-val="perform" data-score="0">
+        <div class="option-indicator"></div>
+        <div class="option-text">Move better and perform better</div>
+      </button>
+      <button class="option" data-q="6" data-val="future" data-score="0">
+        <div class="option-indicator"></div>
+        <div class="option-text">Future-proof my body for the long term</div>
+      </button>
+      <button class="option" data-q="6" data-val="all" data-score="0">
+        <div class="option-indicator"></div>
+        <div class="option-text">All of the above</div>
+      </button>
+    </div>
+    <button class="btn-next" id="next-6" onclick="showEmailGate()">See my results <span class="btn-arrow">→</span></button>
+  </div>
+
+  <!-- Email gate -->
+  <div class="email-gate" id="email-gate">
+    <div class="deco-line"></div>
+    <div class="email-gate-header">
+      <span class="eyebrow">One last step</span>
+      <h2>Your results are ready.</h2>
+      <p>Enter your email and we'll send your full results, plus a free foot strength guide based on your answers. No spam, just getting you started towards stronger feet.</p>
+    </div>
+    <div class="email-form">
+      <input type="text" id="fname" placeholder="First name (optional)" autocomplete="given-name" />
+      <input type="email" id="email" placeholder="Your email address" required autocomplete="email" />
+      <button class="btn-submit" onclick="submitEmail()">
+        See My Results <span class="btn-arrow">→</span>
+      </button>
+      <p class="privacy-note">Your email is safe. Unsubscribe anytime.</p>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results" id="results">
+    <div id="result-content"></div>
+  </div>
+
+</div>
+
+<script>
+  const answers = {};
+  let totalScore = 0;
+
+  function selectOption(btn) {
+    const q = btn.dataset.q;
+    document.querySelectorAll(`.option[data-q="${q}"]`).forEach(o => o.classList.remove('selected'));
+    btn.classList.add('selected');
+    answers[q] = { val: btn.dataset.val, score: parseInt(btn.dataset.score) };
+    const nextBtn = document.getElementById(`next-${q}`);
+    if (nextBtn) nextBtn.classList.add('enabled');
+  }
+
+  document.querySelectorAll('.option').forEach(btn => {
+    btn.addEventListener('click', () => selectOption(btn));
+  });
+
+  function updateProgress(current) {
+    const pct = Math.round(((current - 1) / 6) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = `Question ${current} of 6`;
+    document.getElementById('progress-pct').textContent = pct + '%';
+  }
+
+  function nextQuestion(current) {
+    if (!answers[current]) return;
+    document.getElementById(`q${current}`).classList.remove('active');
+    document.getElementById('quiz-header').style.display = 'none';
+    document.getElementById('progress-wrap').style.display = 'block';
+    const next = current + 1;
+    if (next <= 6) {
+      updateProgress(next);
+      document.getElementById(`q${next}`).classList.add('active');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showEmailGate() {
+    if (!answers[6]) return;
+    document.getElementById('q6').classList.remove('active');
+    document.getElementById('progress-wrap').style.display = 'none';
+    document.getElementById('email-gate').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function calcScore() {
+    let s = 0;
+    Object.values(answers).forEach(a => s += a.score);
+    return s;
+  }
+
+  function getResult(score) {
+    if (score >= 10) {
+      return {
+        bucket: 'danger',
+        badge: 'Your foot health is at risk',
+        title: 'Your shoes are doing the work your feet should be doing.',
+        body: `You're not alone — most people wearing conventional shoes are in the same position. The cushioning, arch support, and narrow toe boxes that feel comfortable are quietly switching off the muscles your feet need. The result: weakness, pain, and movement patterns that compound over time. The good news is this is completely reversible. Your feet are more capable than your shoes have let them be.`,
+        scoreWidth: 85,
+        scoreClass: 'low',
+        cta1Label: 'Shop Minnemals',
+        cta1Url: 'https://minnemals.com/collections/all',
+        cta2Label: 'Get the Free Foot Strength Guide',
+        cta2Url: '#'
+      };
+    } else if (score >= 5) {
+      return {
+        bucket: 'warning',
+        badge: 'Your feet are coasting',
+        title: 'You\'re not in pain yet. But your feet aren\'t working either.',
+        body: `Your footwear is quietly limiting what your feet can do without making enough noise for you to notice. This is the best window to make a change: before the pain shows up, before the compensation patterns set in. Switching to a shoe that lets your foot do its job isn't a sacrifice. It's an upgrade.`,
+        scoreWidth: 52,
+        scoreClass: 'mid',
+        cta1Label: 'Shop Minnemals',
+        cta1Url: 'https://minnemals.com/collections/all',
+        cta2Label: 'Get the Free Foot Strength Guide',
+        cta2Url: '#'
+      };
+    } else {
+      return {
+        bucket: 'good',
+        badge: 'You\'re already on the right track',
+        title: 'Your feet are doing their job. Here\'s how to take it further.',
+        body: `You understand foot health better than most. You're either already in minimalist footwear or your daily habits are keeping your feet in good shape. There's still room to optimize. Most people at your level have one or two blind spots that hold back their movement quality. The guide below will show you what they usually are.`,
+        scoreWidth: 22,
+        scoreClass: 'high',
+        cta1Label: 'Shop Minnemals',
+        cta1Url: 'https://minnemals.com/collections/all',
+        cta2Label: 'Get the Advanced Foot Training Guide',
+        cta2Url: '#'
+      };
+    }
+  }
+
+  function submitEmail() {
+    const email = document.getElementById('email').value.trim();
+    const fname = document.getElementById('fname').value.trim();
+
+    if (!email || !email.includes('@')) {
+      document.getElementById('email').focus();
+      document.getElementById('email').style.borderColor = '#c0392b';
+      return;
+    }
+
+    const score = calcScore();
+    const result = getResult(score);
+
+    // ---- KLAVIYO INTEGRATION ----
+    // Replace YOUR_KLAVIYO_LIST_ID with your actual Klaviyo list ID
+    // Pass these properties to Klaviyo on submission:
+    //   email        — the subscriber's email
+    //   first_name   — optional first name
+    //   foot_result  — 'danger', 'warning', or 'good' (result bucket)
+    //   foot_goal    — 'pain', 'perform', 'future', or 'all' (from Q6)
+    //   foot_score   — numeric score (0-14)
+    // Use these as profile properties in Klaviyo to trigger segmented flows.
+    // ---- END KLAVIYO NOTE ----
+
+    // Store result bucket in sessionStorage so Klaviyo flow can segment
+    try {
+      sessionStorage.setItem('minn_result', result.bucket);
+      sessionStorage.setItem('minn_score', score);
+      sessionStorage.setItem('minn_goal', answers[6] ? answers[6].val : '');
+    } catch(e) {}
+
+    showResults(result, score);
+  }
+
+  function showResults(result, score) {
+    document.getElementById('email-gate').classList.remove('active');
+
+    const html = `
+      <div class="result-badge">${result.badge}</div>
+      <div class="result-title">${result.title}</div>
+      <div class="score-bar-wrap">
+        <div class="score-label-row">
+          <span>Foot health risk score</span>
+          <span>${score} / 14</span>
+        </div>
+        <div class="score-track">
+          <div class="score-fill ${result.scoreClass}" id="score-fill-anim" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="result-body">${result.body}</div>
+      <div class="result-divider"></div>
+      <div class="result-next-label">What to do next</div>
+      <div class="result-actions">
+        <a href="${result.cta1Url}" class="btn-primary">${result.cta1Label}</a>
+        <a href="${result.cta2Url}" class="btn-secondary">${result.cta2Label}</a>
+      </div>
+    `;
+
+    document.getElementById('result-content').innerHTML = html;
+    document.getElementById('results').classList.add('active');
+
+    setTimeout(() => {
+      const fill = document.getElementById('score-fill-anim');
+      if (fill) fill.style.width = result.scoreWidth + '%';
+    }, 200);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
