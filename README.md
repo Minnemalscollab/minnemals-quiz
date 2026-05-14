@@ -1,0 +1,2 @@
+# minnemals-quiz
+strength quiz
