@@ -862,7 +862,7 @@
     try {
       sessionStorage.setItem('minn_result', result.bucket);
       sessionStorage.setItem('minn_score', score);
-      sessionStorage.setItem('minn_goal', answers[6] ? answers[6].val : '');
+      sessionStorage.setItem('minn_goal', quizAnswers[6] ? quizAnswers[6].val : '');
     } catch(e) {}
 
     showResults(result, score);
