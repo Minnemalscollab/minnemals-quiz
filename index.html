@@ -291,14 +291,11 @@
 
     fetch('https://a.klaviyo.com/client/subscriptions/?company_id=XnhzGH', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'revision': '2024-02-15' },
+      headers: { 'Content-Type': 'application/json', 'revision': '2024-10-15' },
       body: JSON.stringify({
         data: {
           type: 'subscription',
           attributes: {
-            list_id: 'UkkGBT',
-            custom_source: 'Quiz',
-            subscriptions: { email: { marketing: { consent: 'SUBSCRIBED' } } },
             profile: {
               data: {
                 type: 'profile',
@@ -311,6 +308,14 @@
                     foot_goal: quizAnswers[6] ? quizAnswers[6].val : ''
                   }
                 }
+              }
+            }
+          },
+          relationships: {
+            list: {
+              data: {
+                type: 'list',
+                id: 'UkkGBT'
               }
             }
           }
