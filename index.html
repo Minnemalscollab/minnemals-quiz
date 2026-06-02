@@ -705,44 +705,41 @@
 </div>
 
 <script>
-  const answers = {};
-  let totalScore = 0;
+  var quizAnswers = {};
 
-  function selectOption(btn) {
-    const q = btn.dataset.q;
-    document.querySelectorAll(`.option[data-q="${q}"]`).forEach(o => o.classList.remove('selected'));
-    btn.classList.add('selected');
-    answers[q] = { val: btn.dataset.val, score: parseInt(btn.dataset.score) };
-    const nextBtn = document.getElementById(`next-${q}`);
-    if (nextBtn) nextBtn.classList.add('enabled');
-  }
-
-  document.querySelectorAll('.option').forEach(btn => {
-    btn.addEventListener('click', () => selectOption(btn));
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.option').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var q = this.getAttribute('data-q');
+        document.querySelectorAll('.option[data-q="' + q + '"]').forEach(function(o) {
+          o.classList.remove('selected');
+        });
+        this.classList.add('selected');
+        quizAnswers[q] = { val: this.getAttribute('data-val'), score: parseInt(this.getAttribute('data-score')) };
+        var nextBtn = document.getElementById('next-' + q);
+        if (nextBtn) nextBtn.classList.add('enabled');
+      });
+    });
   });
 
-  function updateProgress(current) {
-    const pct = Math.round(((current - 1) / 6) * 100);
-    document.getElementById('progress-fill').style.width = pct + '%';
-    document.getElementById('progress-label').textContent = `Question ${current} of 6`;
-    document.getElementById('progress-pct').textContent = pct + '%';
-  }
-
   function nextQuestion(current) {
-    if (!answers[current]) return;
-    document.getElementById(`q${current}`).classList.remove('active');
+    if (!quizAnswers[current]) return;
+    document.getElementById('q' + current).classList.remove('active');
     document.getElementById('quiz-header').style.display = 'none';
     document.getElementById('progress-wrap').style.display = 'block';
-    const next = current + 1;
+    var next = current + 1;
     if (next <= 6) {
-      updateProgress(next);
-      document.getElementById(`q${next}`).classList.add('active');
+      var pct = Math.round(((next - 1) / 6) * 100);
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-label').textContent = 'Question ' + next + ' of 6';
+      document.getElementById('progress-pct').textContent = pct + '%';
+      document.getElementById('q' + next).classList.add('active');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function showEmailGate() {
-    if (!answers[6]) return;
+    if (!quizAnswers[6]) return;
     document.getElementById('q6').classList.remove('active');
     document.getElementById('progress-wrap').style.display = 'none';
     document.getElementById('email-gate').classList.add('active');
@@ -750,8 +747,8 @@
   }
 
   function calcScore() {
-    let s = 0;
-    Object.values(answers).forEach(a => s += a.score);
+    var s = 0;
+    Object.keys(quizAnswers).forEach(function(k) { s += quizAnswers[k].score; });
     return s;
   }
 
@@ -761,55 +758,46 @@
         bucket: 'danger',
         badge: 'Your foot health is at risk',
         title: 'Your shoes are doing the work your feet should be doing.',
-        body: `You're not alone — most people wearing conventional shoes are in the same position. The cushioning, arch support, and narrow toe boxes that feel comfortable are quietly switching off the muscles your feet need. The result: weakness, pain, and movement patterns that compound over time. The good news is this is completely reversible. Your feet are more capable than your shoes have let them be.`,
-        scoreWidth: 85,
-        scoreClass: 'low',
-        cta1Label: 'Shop Minnemals',
-        cta1Url: 'https://minnemals.com/collections/all',
-        cta2Label: 'Keep Learning on Instagram',
-        cta2Url: 'https://www.instagram.com/minnemals'
+        body: 'You\'re not alone — most people wearing conventional shoes are in the same position. The cushioning, arch support, and narrow toe boxes that feel comfortable are quietly switching off the muscles your feet need. The result: weakness, pain, and movement patterns that compound over time. The good news is this is completely reversible. Your feet are more capable than your shoes have let them be.',
+        scoreWidth: 85, scoreClass: 'low',
+        cta1Label: 'Shop Minnemals', cta1Url: 'https://minnemals.com/collections/all',
+        cta2Label: 'Keep Learning on Instagram', cta2Url: 'https://www.instagram.com/minnemals'
       };
     } else if (score >= 5) {
       return {
         bucket: 'warning',
         badge: 'Your feet are coasting',
         title: 'You\'re not in pain yet. But your feet aren\'t working either.',
-        body: `Your footwear is quietly limiting what your feet can do without making enough noise for you to notice. This is the best window to make a change: before the pain shows up, before the compensation patterns set in. Switching to a shoe that lets your foot do its job isn't a sacrifice. It's an upgrade.`,
-        scoreWidth: 52,
-        scoreClass: 'mid',
-        cta1Label: 'Shop Minnemals',
-        cta1Url: 'https://minnemals.com/collections/all',
-        cta2Label: 'Keep Learning on Instagram',
-        cta2Url: 'https://www.instagram.com/minnemals'
+        body: 'Your footwear is quietly limiting what your feet can do without making enough noise for you to notice. This is the best window to make a change: before the pain shows up, before the compensation patterns set in. Switching to a shoe that lets your foot do its job isn\'t a sacrifice. It\'s an upgrade.',
+        scoreWidth: 52, scoreClass: 'mid',
+        cta1Label: 'Shop Minnemals', cta1Url: 'https://minnemals.com/collections/all',
+        cta2Label: 'Keep Learning on Instagram', cta2Url: 'https://www.instagram.com/minnemals'
       };
     } else {
       return {
         bucket: 'good',
         badge: 'You\'re already on the right track',
         title: 'Your feet are doing their job. Here\'s how to take it further.',
-        body: `You understand foot health better than most. You're either already in minimalist footwear or your daily habits are keeping your feet in good shape. There's still room to optimize. Most people at your level have one or two blind spots that hold back their movement quality. The guide below will show you what they usually are.`,
-        scoreWidth: 22,
-        scoreClass: 'high',
-        cta1Label: 'Shop Minnemals',
-        cta1Url: 'https://minnemals.com/collections/all',
-        cta2Label: 'Keep Learning on Instagram',
-        cta2Url: 'https://www.instagram.com/minnemals'
+        body: 'You understand foot health better than most. You\'re either already in minimalist footwear or your daily habits are keeping your feet in good shape. There\'s still room to optimize. Most people at your level have one or two blind spots that hold back their movement quality. The guide below will show you what they usually are.',
+        scoreWidth: 22, scoreClass: 'high',
+        cta1Label: 'Shop Minnemals', cta1Url: 'https://minnemals.com/collections/all',
+        cta2Label: 'Keep Learning on Instagram', cta2Url: 'https://www.instagram.com/minnemals'
       };
     }
   }
 
   function submitEmail() {
-    const email = document.getElementById('email').value.trim();
-    const fname = document.getElementById('fname').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var fname = document.getElementById('fname').value.trim();
 
-    if (!email || !email.includes('@')) {
+    if (!email || email.indexOf('@') === -1) {
       document.getElementById('email').focus();
       document.getElementById('email').style.borderColor = '#c0392b';
       return;
     }
 
-    const score = calcScore();
-    const result = getResult(score);
+    var score = calcScore();
+    var result = getResult(score);
 
     // ---- KLAVIYO INTEGRATION ----
     var klaviyoPayload = {
@@ -817,7 +805,6 @@
         type: 'subscription',
         attributes: {
           list_id: 'UkkGBT',
-          email: email,
           custom_source: 'Quiz',
           subscriptions: {
             email: {
@@ -858,7 +845,6 @@
     });
     // ---- END KLAVIYO INTEGRATION ----
 
-    // Store result bucket in sessionStorage so Klaviyo flow can segment
     try {
       sessionStorage.setItem('minn_result', result.bucket);
       sessionStorage.setItem('minn_score', score);
@@ -870,36 +856,23 @@
 
   function showResults(result, score) {
     document.getElementById('email-gate').classList.remove('active');
-
-    const html = `
-      <div class="result-badge">${result.badge}</div>
-      <div class="result-title">${result.title}</div>
-      <div class="score-bar-wrap">
-        <div class="score-label-row">
-          <span>Foot health risk score</span>
-          <span>${score} / 14</span>
-        </div>
-        <div class="score-track">
-          <div class="score-fill ${result.scoreClass}" id="score-fill-anim" style="width: 0%"></div>
-        </div>
-      </div>
-      <div class="result-body">${result.body}</div>
-      <div class="result-divider"></div>
-      <div class="result-next-label">What to do next</div>
-      <div class="result-actions">
-        <a href="${result.cta1Url}" class="btn-primary">${result.cta1Label}</a>
-        <a href="${result.cta2Url}" class="btn-secondary">${result.cta2Label}</a>
-      </div>
-    `;
-
+    var html = '<div class="result-badge">' + result.badge + '</div>' +
+      '<div class="result-title">' + result.title + '</div>' +
+      '<div class="score-bar-wrap"><div class="score-label-row"><span>Foot health risk score</span><span>' + score + ' / 14</span></div>' +
+      '<div class="score-track"><div class="score-fill ' + result.scoreClass + '" id="score-fill-anim" style="width:0%"></div></div></div>' +
+      '<div class="result-body">' + result.body + '</div>' +
+      '<div class="result-divider"></div>' +
+      '<div class="result-next-label">What to do next</div>' +
+      '<div class="result-actions">' +
+      '<a href="' + result.cta1Url + '" class="btn-primary">' + result.cta1Label + '</a>' +
+      '<a href="' + result.cta2Url + '" class="btn-secondary">' + result.cta2Label + '</a>' +
+      '</div>';
     document.getElementById('result-content').innerHTML = html;
     document.getElementById('results').classList.add('active');
-
-    setTimeout(() => {
-      const fill = document.getElementById('score-fill-anim');
+    setTimeout(function() {
+      var fill = document.getElementById('score-fill-anim');
       if (fill) fill.style.width = result.scoreWidth + '%';
     }, 200);
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
