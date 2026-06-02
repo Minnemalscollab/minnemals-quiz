@@ -812,15 +812,36 @@
     const result = getResult(score);
 
     // ---- KLAVIYO INTEGRATION ----
-    // Replace YOUR_KLAVIYO_LIST_ID with your actual Klaviyo list ID
-    // Pass these properties to Klaviyo on submission:
-    //   email        — the subscriber's email
-    //   first_name   — optional first name
-    //   foot_result  — 'danger', 'warning', or 'good' (result bucket)
-    //   foot_goal    — 'pain', 'perform', 'future', or 'all' (from Q6)
-    //   foot_score   — numeric score (0-14)
-    // Use these as profile properties in Klaviyo to trigger segmented flows.
-    // ---- END KLAVIYO NOTE ----
+    var klaviyoPayload = {
+      data: {
+        type: 'subscription',
+        attributes: {
+          list_id: 'UkkGBT',
+          subscriptions: { email: { marketing: { consent: 'SUBSCRIBED' } } },
+          profile: {
+            data: {
+              type: 'profile',
+              attributes: {
+                email: email,
+                first_name: fname,
+                properties: {
+                  foot_result: result.bucket,
+                  foot_score: score,
+                  foot_goal: answers[6] ? answers[6].val : ''
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    fetch('https://a.klaviyo.com/client/subscriptions/?company_id=XnhzGH', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'revision': '2023-12-15' },
+      body: JSON.stringify(klaviyoPayload)
+    }).catch(function(err) { console.log('Klaviyo error:', err); });
+    // ---- END KLAVIYO INTEGRATION ----
 
     // Store result bucket in sessionStorage so Klaviyo flow can segment
     try {
