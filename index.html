@@ -817,17 +817,25 @@
         type: 'subscription',
         attributes: {
           list_id: 'UkkGBT',
-          subscriptions: { email: { marketing: { consent: 'SUBSCRIBED' } } },
+          email: email,
+          custom_source: 'Quiz',
+          subscriptions: {
+            email: {
+              marketing: {
+                consent: 'SUBSCRIBED'
+              }
+            }
+          },
           profile: {
             data: {
               type: 'profile',
               attributes: {
                 email: email,
-                first_name: fname,
+                first_name: fname || '',
                 properties: {
                   foot_result: result.bucket,
                   foot_score: score,
-                  foot_goal: answers[6] ? answers[6].val : ''
+                  foot_goal: quizAnswers[6] ? quizAnswers[6].val : ''
                 }
               }
             }
@@ -838,9 +846,16 @@
 
     fetch('https://a.klaviyo.com/client/subscriptions/?company_id=XnhzGH', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'revision': '2023-12-15' },
+      headers: {
+        'Content-Type': 'application/json',
+        'revision': '2024-02-15'
+      },
       body: JSON.stringify(klaviyoPayload)
-    }).catch(function(err) { console.log('Klaviyo error:', err); });
+    }).then(function(res) {
+      console.log('Klaviyo status:', res.status);
+    }).catch(function(err) {
+      console.log('Klaviyo error:', err);
+    });
     // ---- END KLAVIYO INTEGRATION ----
 
     // Store result bucket in sessionStorage so Klaviyo flow can segment
